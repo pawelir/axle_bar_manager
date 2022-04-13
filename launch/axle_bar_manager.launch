@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+<node pkg="axle_bar_manager" type="axle_bar_node.py" name="axle_bar_manager" output="screen"/>
+
+</launch>
