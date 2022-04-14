@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
 
-import rospy
 from control_msgs.msg import JointControllerState
 from std_msgs.msg import Float64
+from std_srvs.srv import Trigger
+import rospy
 
-'''Module providing functions to control the Rotrac's axle bars'''
+'''Module responsible for controlling the Rotrac's axle bars'''
 
 class AxleBarManager:
     def __init__(self):
-        self.front_axle_position_pub = rospy.Publisher('/rotrac_e2/front_axle_position_controller/command',
+        self.pub_front_axle_position = rospy.Publisher('/rotrac_e2/front_axle_position_controller/command',
                                                        Float64,
                                                        queue_size=1)
-        self.rear_axle_position_pub = rospy.Publisher('/rotrac_e2/rear_axle_position_controller/command',
+        self.pub_rear_axle_position = rospy.Publisher('/rotrac_e2/rear_axle_position_controller/command',
                                                        Float64,
                                                        queue_size=1)
-        self.front_axle_state_sub = rospy.Subscriber('/rotrac_e2/front_axle_position_controller/state', 
+        self.sub_front_axle_state = rospy.Subscriber('/rotrac_e2/front_axle_position_controller/state', 
                                                     JointControllerState,
                                                     self.update_front_axle_state)
-        self.rear_axle_state_sub = rospy.Subscriber('/rotrac_e2/rear_axle_position_controller/state', 
+        self.sub_rear_axle_state = rospy.Subscriber('/rotrac_e2/rear_axle_position_controller/state', 
                                                     JointControllerState,
                                                     self.update_rear_axle_state)
+        self.srv_raise_bars = rospy.Service("~/raise_axle_bars",
+                                            Trigger,
+                                            self.raise_axle_bars_cb)
+        self.srv_raise_bars = rospy.Service("~/lower_axle_bars",
+                                            Trigger,
+                                            self.lower_axle_bars_cb)
         self.axle_position = Float64()
         self.front_axle_state = JointControllerState()
         self.rear_axle_state = JointControllerState()
@@ -31,15 +38,15 @@ class AxleBarManager:
     def update_rear_axle_state(self,msg) -> None:
         self.rear_axle_state = msg
     
-    def axles_up (self) -> None:
+    def raise_axle_bars_cb (self) -> None:
         self.axle_position.data = 0.1
-        self.front_axle_position_pub.publish(self.axle_position)
-        self.rear_axle_position_pub.publish(self.axle_position)
+        self.pub_front_axle_position.publish(self.axle_position)
+        self.pub_rear_axle_position.publish(self.axle_position)
 
-    def axles_down (self) -> None:
+    def lower_axle_bars_cb (self) -> None:
         self.axle_position.data = 0.0
-        self.front_axle_position_pub.publish(self.axle_position)
-        self.rear_axle_position_pub.publish(self.axle_position)
+        self.pub_front_axle_position.publish(self.axle_position)
+        self.pub_rear_axle_position.publish(self.axle_position)
 
     @property
     def lowered(self) -> bool:

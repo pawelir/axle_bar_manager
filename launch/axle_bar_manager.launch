@@ -2,6 +2,6 @@
 
 <launch>
 
-<node pkg="axle_bar_manager" type="axle_bar_node.py" name="axle_bar_manager" output="screen"/>
+    <node pkg="axle_bar_manager" type="axle_bar_node.py" name="axle_bar_manager" output="screen"/>
 
 </launch>
