@@ -38,7 +38,7 @@ class AxleBarManager:
     def _update_rear_axle_state(self, msg: JointControllerState) -> None:
         self._rear_axle_state = msg
     
-    def _raise_axle_bars_cb (self) -> None:
+    def _raise_axle_bars_cb (self, req) -> None:
         rospy.logdebug("Raise axle bars service called")
         axle_position = Float64(data=0.1)
         self.pub_front_axle_position.publish(axle_position)
@@ -50,7 +50,7 @@ class AxleBarManager:
         rospy.logdebug("Raise axle bars service finished")
         return TriggerResponse(success=self.raised)
 
-    def _lower_axle_bars_cb (self) -> None:
+    def _lower_axle_bars_cb (self, req) -> None:
         rospy.logdebug("Lower axle bars service called")
         axle_position = Float64(data=0.0)
         self.pub_front_axle_position.publish(axle_position)
